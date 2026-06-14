@@ -8,7 +8,7 @@ SECRET_KEY = 'django-insecure-mmfl-p!luus@yr!bf#fqe1$(a3b&^i)$lz^lcmn0m^yz%r3p4q
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['flower-shop-project-tx4t.onrender.com', '127.0.0.1', 'localhost']
 
 
 
