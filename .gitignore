@@ -13,6 +13,7 @@ env/
 
 *.log
 db.sqlite3
+*.sql
 media/
 staticfiles/
 local_settings.py
