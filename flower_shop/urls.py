@@ -26,4 +26,6 @@ if settings.DEBUG:
             {'document_root': settings.BASE_DIR / 'static'},
         ),
     ]
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Картинки товаров лежат в media/ и должны отдаваться и на хостинге (DEBUG=False).
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
