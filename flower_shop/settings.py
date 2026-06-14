@@ -1,15 +1,29 @@
+import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 
-SECRET_KEY = 'django-insecure-mmfl-p!luus@yr!bf#fqe1$(a3b&^i)$lz^lcmn0m^yz%r3p4q'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-mmfl-p!luus@yr!bf#fqe1$(a3b&^i)$lz^lcmn0m^yz%r3p4q',
+)
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['flower-shop-project-tx4t.onrender.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+if render_host := os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
+    ALLOWED_HOSTS.append(render_host)
+for host in os.environ.get('ALLOWED_HOSTS', '').split(','):
+    host = host.strip()
+    if host:
+        ALLOWED_HOSTS.append(host)
 
+CSRF_TRUSTED_ORIGINS = [
+    f'https://{host}' for host in ALLOWED_HOSTS if host not in ('127.0.0.1', 'localhost')
+]
 
 
 INSTALLED_APPS = [
@@ -29,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -63,16 +78,48 @@ WSGI_APPLICATION = 'flower_shop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
+IS_RENDER = os.environ.get('RENDER') == 'true'
+database_url = os.environ.get('DATABASE_URL')
+
+if database_url:
+    db_url = urlparse(database_url)
+    DATABASES = {
         'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'flower_shop',
-        'USER': 'flower_user',
-        'PASSWORD': 'Mark24112006',   # замените на реальный пароль
-        'HOST': 'localhost',
-        'PORT': '5432',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_url.path.lstrip('/'),
+            'USER': db_url.username,
+            'PASSWORD': db_url.password,
+            'HOST': db_url.hostname,
+            'PORT': str(db_url.port or 5432),
+        }
     }
-}
+elif os.environ.get('DB_HOST'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'flower_shop'),
+            'USER': os.environ.get('DB_USER', 'flower_user'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ['DB_HOST'],
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
+elif IS_RENDER:
+    raise RuntimeError(
+        'На Render нужна переменная DATABASE_URL. '
+        'Создайте PostgreSQL и привяжите её к Web Service.'
+    )
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'flower_shop'),
+            'USER': os.environ.get('DB_USER', 'flower_user'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
 
 
 # Password validation
@@ -106,6 +153,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
