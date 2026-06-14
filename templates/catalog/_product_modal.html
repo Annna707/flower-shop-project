@@ -1,0 +1,48 @@
+<div class="product-modal" id="productModal" aria-hidden="true" role="dialog" aria-labelledby="productModalTitle">
+    <div class="product-modal__backdrop" data-modal-close></div>
+    <div class="product-modal__dialog">
+        <button type="button" class="product-modal__close" data-modal-close aria-label="Закрыть">
+            <i class="fas fa-xmark"></i>
+        </button>
+        <div class="product-modal__grid">
+            <div class="product-modal__media">
+                <img src="" alt="" id="productModalImage" class="product-modal__image">
+                <div class="product-modal__media-placeholder" id="productModalPlaceholder" hidden>
+                    <i class="fas fa-spa"></i>
+                </div>
+                <span class="product-modal__badge" id="productModalBadge"></span>
+            </div>
+            <div class="product-modal__content">
+                <span class="section-label" id="productModalCategory"></span>
+                <h2 class="product-modal__title" id="productModalTitle"></h2>
+                <div class="product-modal__price-row">
+                    <span class="product-modal__price" id="productModalPrice"></span>
+                    <span class="product-modal__stock" id="productModalStock"></span>
+                </div>
+                <p class="product-modal__desc" id="productModalDesc"></p>
+                <div class="product-modal__specs">
+                    <h3 class="product-modal__specs-title">Характеристики</h3>
+                    <ul class="product-modal__specs-list" id="productModalSpecs"></ul>
+                </div>
+                <div class="product-modal__perks">
+                    <span><i class="fas fa-truck-fast"></i> Доставка от 2 ч</span>
+                    <span><i class="fas fa-gift"></i> Открытка в подарок</span>
+                    <span><i class="fas fa-droplet"></i> Средство для среза</span>
+                </div>
+                <form class="product-modal__form js-cart-add" id="productModalForm" method="post" action="">
+                    {% csrf_token %}
+                    <div class="product-modal__qty">
+                        <label for="productModalQty">Количество</label>
+                        <input type="number" name="quantity" id="productModalQty" value="1" min="1" class="form-control qty-input">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 product-modal__submit" id="productModalSubmit">
+                        <i class="fas fa-bag-shopping me-2"></i>В корзину
+                    </button>
+                </form>
+                <a href="#" class="product-modal__link" id="productModalLink">
+                    Открыть полную страницу товара <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

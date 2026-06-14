@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет — ИМИДЖ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="page-header reveal">
+        <span class="section-label">Аккаунт</span>
+        <h1 class="page-title">Личный кабинет</h1>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="profile-card reveal">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
+                    <h2 class="h4 mb-0">
+                        Привет, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}!
+                    </h2>
+                    <a href="{% url 'users:profile_edit' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-pen me-1"></i>Редактировать
+                    </a>
+                </div>
+                <div class="profile-detail">
+                    <i class="fas fa-user"></i>
+                    <div>
+                        <strong>Имя и фамилия</strong>
+                        <p class="mb-0 text-muted">
+                            {% if user.first_name or user.last_name %}
+                            {{ user.first_name }} {{ user.last_name }}
+                            {% else %}
+                            не указаны
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="profile-detail">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <strong>Email</strong>
+                        <p class="mb-0 text-muted">{{ user.email|default:"не указан" }}</p>
+                    </div>
+                </div>
+                <div class="profile-detail">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <strong>Телефон</strong>
+                        <p class="mb-0 text-muted">{{ user.profile.phone|default:"не указан" }}</p>
+                    </div>
+                </div>
+                <div class="profile-detail">
+                    <i class="fas fa-location-dot"></i>
+                    <div>
+                        <strong>Адрес</strong>
+                        <p class="mb-0 text-muted">{{ user.profile.address|default:"не указан" }}</p>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex flex-wrap gap-2">
+                    <a href="{% url 'orders:order_history' %}" class="btn btn-primary">Мои заказы</a>
+                    <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary">В каталог</a>
+                    <form method="post" action="{% url 'users:logout' %}" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="fas fa-right-from-bracket me-1"></i>Выйти
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

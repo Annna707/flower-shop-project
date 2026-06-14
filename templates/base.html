@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}Свежие букеты и цветы с доставкой — цветочный магазин ИМИДЖ{% endblock %}">
+    <title>{% block title %}Цветочный магазин «ИМИДЖ»{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=17">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="petals-bg" aria-hidden="true"></div>
+
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar__inner">
+                <div class="top-bar__links">
+                    <a href="{% url 'catalog:product_list' %}">О магазине</a>
+                    <a href="{% url 'catalog:product_list' %}#delivery">Доставка</a>
+                </div>
+                <div class="top-bar__contact">
+                    <i class="fas fa-phone"></i>
+                    <a href="tel:+79001234567">8 800 123-45-67</a>
+                    <span class="top-bar__badge">24/7</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="site-header" id="siteHeader">
+        <div class="container">
+            <div class="header-main">
+                <a class="navbar-brand" href="{% url 'catalog:product_list' %}">
+                    <span class="brand-icon"><i class="fas fa-spa"></i></span>
+                    <span class="brand-text-wrap">
+                        <span class="brand-text">ИМИДЖ<span class="brand-accent">Цветы</span></span>
+                        <span class="brand-tagline">забота о каждом букете</span>
+                    </span>
+                </a>
+
+                <a href="{% url 'catalog:product_list' %}#catalog" class="btn btn-catalog-menu d-none d-lg-inline-flex">
+                    <i class="fas fa-bars"></i> Все букеты
+                </a>
+
+                <form class="header-search header-search--desktop" action="{% url 'catalog:product_list' %}" method="get" role="search">
+                    <input type="search" name="q" class="header-search__input"
+                           placeholder="Поиск букетов и композиций…"
+                           value="{{ search_query|default:'' }}" aria-label="Поиск">
+                    <button type="submit" class="header-search__btn" aria-label="Найти">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </button>
+                </form>
+
+                <div class="header-actions">
+                    {% if user.is_authenticated %}
+                    <a class="header-action" href="{% url 'users:profile' %}" title="Профиль">
+                        <i class="far fa-user"></i>
+                    </a>
+                    {% else %}
+                    <a class="header-action" href="{% url 'users:login' %}" title="Вход">
+                        <i class="far fa-user"></i>
+                    </a>
+                    {% endif %}
+                    <a class="header-action header-action--cart position-relative" href="{% url 'cart:cart_detail' %}" title="Корзина" id="cartLink">
+                        <i class="fas fa-bag-shopping"></i>
+                        <span class="cart-badge{% if cart_total_items == 0 %} d-none{% endif %}" id="cartBadge">{{ cart_total_items }}</span>
+                    </a>
+                </div>
+
+                <button class="navbar-toggler header-toggler d-lg-none" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Меню">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <nav class="header-nav collapse navbar-collapse" id="navbarMain">
+                <form class="header-search header-search--mobile" action="{% url 'catalog:product_list' %}" method="get" role="search">
+                    <input type="search" name="q" class="header-search__input"
+                           placeholder="Поиск букетов…"
+                           value="{{ search_query|default:'' }}" aria-label="Поиск">
+                    <button type="submit" class="header-search__btn" aria-label="Найти">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </button>
+                </form>
+                <a href="{% url 'catalog:product_list' %}"
+                   class="header-nav__link {% if request.resolver_match.url_name == 'product_list' and not request.resolver_match.kwargs.category_slug %}is-active{% endif %}">
+                    Главная
+                </a>
+                <a href="{% url 'catalog:product_list' %}#catalog" class="header-nav__link">Каталог</a>
+                <a href="{% url 'catalog:product_list' %}#delivery" class="header-nav__link">Доставка</a>
+                {% for cat in categories|slice:":5" %}
+                <a href="{{ cat.get_absolute_url }}" class="header-nav__link">{{ cat.name }}</a>
+                {% endfor %}
+                <a href="{% url 'catalog:product_list' %}?max_price=3000" class="header-nav__link header-nav__link--accent">
+                    <i class="fas fa-bolt"></i> До 3000 ₽
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'orders:order_history' %}" class="header-nav__link">Мои заказы</a>
+                <form method="post" action="{% url 'users:logout' %}" class="header-nav-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="header-nav__link header-nav__link--logout">Выйти</button>
+                </form>
+                {% else %}
+                <a href="{% url 'users:register' %}" class="header-nav__link">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="toast-container-custom" id="toastContainer">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-flora alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <main id="main-content">
+        {% block hero %}{% endblock %}
+        <div class="page-wrap {% block page_wrap_class %}{% endblock %}">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-wave" aria-hidden="true"></div>
+        <div class="container">
+            <div class="row g-4 footer-grid">
+                <div class="col-lg-4 col-md-6">
+                    <a class="footer-brand" href="{% url 'catalog:product_list' %}">
+                        <span class="brand-icon"><i class="fas fa-spa"></i></span>
+                        ИМИДЖ<span class="brand-accent">Цветы</span>
+                    </a>
+                    <p class="footer-tagline">Свежие букеты, собранные с любовью. Доставка по городу в день заказа.</p>
+                    <div class="footer-social">
+                        <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                        <a href="#" aria-label="VK"><i class="fab fa-vk"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="footer-heading">Магазин</h6>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'catalog:product_list' %}">Каталог</a></li>
+                        <li><a href="{% url 'catalog:product_list' %}#delivery">Доставка</a></li>
+                        <li><a href="{% url 'cart:cart_detail' %}">Корзина</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'orders:order_history' %}">Мои заказы</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="footer-heading">Аккаунт</h6>
+                    <ul class="footer-links">
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'users:profile' %}">Профиль</a></li>
+                        <li>
+                            <form method="post" action="{% url 'users:logout' %}" class="footer-logout-form">
+                                {% csrf_token %}
+                                <button type="submit" class="footer-logout-btn">Выйти</button>
+                            </form>
+                        </li>
+                        {% else %}
+                        <li><a href="{% url 'users:login' %}">Вход</a></li>
+                        <li><a href="{% url 'users:register' %}">Регистрация</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="footer-heading">Контакты</h6>
+                    <ul class="footer-contacts">
+                        <li><i class="fas fa-phone"></i> +7 (900) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@image-flowers.ru</li>
+                        <li><i class="fas fa-clock"></i> Ежедневно 9:00 — 21:00</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© {% now "Y" %} ООО «ИМИДЖ» — свежие цветы с доставкой</p>
+            </div>
+        </div>
+    </footer>
+
+    <button type="button" class="back-to-top" id="backToTop" aria-label="Наверх">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="{% static 'js/main.js' %}?v=10"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Корзина — ИМИДЖ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="page-header reveal">
+        <span class="section-label">Покупки</span>
+        <h1 class="page-title">Корзина</h1>
+    </header>
+
+    {% if cart %}
+    <div class="flora-table-wrap reveal mb-4">
+        <div class="table-responsive">
+            <table class="table flora-table flora-table--responsive mb-0">
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Количество</th>
+                        <th>Цена</th>
+                        <th>Сумма</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                    <tr class="flora-table__item">
+                        <td data-label="Товар">
+                            <strong>{{ item.product.name }}</strong>
+                            <br><small class="text-muted">{{ item.product.category.name }}</small>
+                        </td>
+                        <td data-label="Количество">
+                            <form action="{% url 'cart:cart_add' item.product.id %}" method="post" class="cart-qty-form d-flex align-items-center gap-2 flex-wrap">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                                       class="form-control form-control-sm qty-input">
+                                <input type="hidden" name="override" value="True">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Обновить</button>
+                            </form>
+                        </td>
+                        <td data-label="Цена">{{ item.price }} ₽</td>
+                        <td data-label="Сумма" class="fw-semibold text-rose">{{ item.total_price }} ₽</td>
+                        <td data-label="" class="flora-table__actions">
+                            <form action="{% url 'cart:cart_remove' item.product.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger delete-cart-item w-100" title="Удалить">
+                                    <i class="fas fa-trash-alt me-1"></i>Удалить
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="flora-table__total fw-bold">
+                        <td data-label="Итого" colspan="5" class="text-rose fs-5">{{ cart.get_total_price }} ₽</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 reveal">
+        <a href="{% url 'catalog:product_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Продолжить покупки
+        </a>
+        <a href="{% url 'orders:order_create' %}" class="btn btn-primary btn-lg">
+            Оформить заказ <i class="fas fa-arrow-right ms-2"></i>
+        </a>
+    </div>
+    {% else %}
+    <div class="empty-state reveal">
+        <i class="fas fa-bag-shopping d-block"></i>
+        <h3>Корзина пуста</h3>
+        <p class="text-muted mb-4">Добавьте букет из каталога — он ждёт вас.</p>
+        <a href="{% url 'catalog:product_list' %}" class="btn btn-primary">Перейти в каталог</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

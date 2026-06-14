@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Заказ №{{ order.id }} — ИМИДЖ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="page-header reveal">
+        <span class="section-label">Заказ</span>
+        <h1 class="page-title">Заказ №{{ order.id }}</h1>
+    </header>
+
+    <div class="profile-card reveal mb-4">
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <strong class="d-block text-muted small">Статус</strong>
+                <span class="badge rounded-pill bg-light text-dark border fs-6">{{ order.get_status_display }}</span>
+            </div>
+            <div class="col-sm-6">
+                <strong class="d-block text-muted small">Дата</strong>
+                {{ order.created|date:"d.m.Y H:i" }}
+            </div>
+            <div class="col-sm-6">
+                <strong class="d-block text-muted small">Доставка</strong>
+                {{ order.get_delivery_method_display }}
+            </div>
+            <div class="col-sm-6">
+                <strong class="d-block text-muted small">Оплата</strong>
+                {{ order.get_payment_method_display }}
+                {% if order.paid %}<span class="badge bg-success ms-1">Оплачен</span>{% endif %}
+            </div>
+            <div class="col-sm-6">
+                <strong class="d-block text-muted small">Телефон</strong>
+                {{ order.phone|default:"не указан" }}
+            </div>
+            <div class="col-12">
+                <strong class="d-block text-muted small">Адрес</strong>
+                {{ order.address }}, {{ order.city }}{% if order.postal_code %}, {{ order.postal_code }}{% endif %}
+            </div>
+            {% if order.comment %}
+            <div class="col-12">
+                <strong class="d-block text-muted small">Комментарий</strong>
+                {{ order.comment }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <h2 class="h5 mb-3 reveal">Состав заказа</h2>
+    <div class="flora-table-wrap reveal">
+        <div class="table-responsive">
+            <table class="table flora-table flora-table--responsive mb-0">
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Цена</th>
+                        <th>Кол-во</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr class="flora-table__item">
+                        <td data-label="Товар">{{ item.product.name }}</td>
+                        <td data-label="Цена">{{ item.price }} ₽</td>
+                        <td data-label="Кол-во">{{ item.quantity }}</td>
+                        <td data-label="Сумма" class="fw-semibold">{{ item.get_cost }} ₽</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="flora-table__subtotal">
+                        <td data-label="Товары" colspan="4">{{ order.get_total_cost }} ₽</td>
+                    </tr>
+                    <tr class="flora-table__subtotal">
+                        <td data-label="Доставка" colspan="4">{% if order.delivery_cost %}{{ order.delivery_cost }} ₽{% else %}бесплатно{% endif %}</td>
+                    </tr>
+                    <tr class="flora-table__total">
+                        <td data-label="Итого" colspan="4" class="text-rose fs-5">{{ order.get_grand_total }} ₽</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-4 reveal">
+        <a href="{% url 'orders:order_history' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>К списку заказов
+        </a>
+    </div>
+</div>
+{% endblock %}

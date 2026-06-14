@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — ИМИДЖ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb-flora" aria-label="Навигация">
+        <a href="{% url 'catalog:product_list' %}">Главная</a>
+        <span class="mx-2">/</span>
+        <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+        <span class="mx-2">/</span>
+        <span>{{ product.name }}</span>
+    </nav>
+
+    <div class="row g-5 align-items-start">
+        <div class="col-lg-6 reveal">
+            <div class="product-gallery">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-light" style="aspect-ratio:1;">
+                    <i class="fas fa-image fa-4x text-muted opacity-25"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-6 product-info reveal">
+            <span class="section-label">{{ product.category.name }}</span>
+            <h1 class="page-title">{{ product.name }}</h1>
+
+            <span class="stock-badge mb-3 {% if product.available_stock > 0 %}stock-badge--in{% else %}stock-badge--out{% endif %}"
+                  id="productStockBadge" data-product-id="{{ product.id }}">
+                {% if product.available_stock > 0 %}
+                <i class="fas fa-check-circle"></i> В наличии · <span id="productStockCount">{{ product.available_stock }}</span> шт.
+                {% else %}
+                <i class="fas fa-clock"></i> Нет в наличии
+                {% endif %}
+            </span>
+
+            <p class="lead text-muted">{{ product.description }}</p>
+
+            <p class="product-price-lg mb-4">{{ product.price }} ₽</p>
+
+            <form action="{% url 'cart:cart_add' product.id %}" method="post"
+                  class="mb-4 js-cart-add{% if product.available_stock == 0 %} d-none{% endif %}" id="productCartForm"
+                  data-product-id="{{ product.id }}">
+                {% csrf_token %}
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="quantity" class="form-label visually-hidden">Количество</label>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1"
+                               max="{{ product.available_stock }}" class="form-control qty-input">
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary btn-lg w-100" id="productCartSubmit">
+                            <i class="fas fa-bag-shopping me-2"></i>В корзину
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <button class="btn btn-secondary btn-lg w-100 mb-4{% if product.available_stock > 0 %} d-none{% endif %}"
+                    disabled id="productOutOfStockBtn">Нет в наличии</button>
+
+            <div class="d-flex flex-wrap gap-3 text-muted small">
+                <span><i class="fas fa-truck text-sage me-1"></i> Доставка от 2 ч</span>
+                <span><i class="fas fa-gift text-sage me-1"></i> Открытка в подарок</span>
+                <span><i class="fas fa-droplet text-sage me-1"></i> Средство для среза</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

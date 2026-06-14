@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Оформление заказа — ИМИДЖ{% endblock %}
+{% block page_wrap_class %}page-wrap--narrow{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="page-header reveal text-center">
+        <span class="section-label">Оформление</span>
+        <h1 class="page-title h2">Ваш заказ</h1>
+    </header>
+
+    <div class="row g-4 justify-content-center checkout-layout">
+        <div class="col-lg-7">
+            <div class="form-card reveal">
+                <form method="post" id="orderForm" novalidate>
+                    {% csrf_token %}
+
+                    <fieldset class="checkout-fieldset mb-4">
+                        <legend class="checkout-fieldset__title">Способ доставки</legend>
+                        <div class="checkout-options">
+                            {% for value, label in form.delivery_method.field.choices %}
+                            <label class="checkout-option">
+                                <input type="radio" name="delivery_method" value="{{ value }}"
+                                       class="checkout-option__input"
+                                       {% if form.delivery_method.value == value %}checked{% endif %}>
+                                <span class="checkout-option__box">
+                                    <span class="checkout-option__icon">
+                                        {% if value == 'express' %}<i class="fas fa-bolt"></i>
+                                        {% elif value == 'pickup' %}<i class="fas fa-store"></i>
+                                        {% else %}<i class="fas fa-truck"></i>{% endif %}
+                                    </span>
+                                    <span class="checkout-option__text">
+                                        <strong>{{ label }}</strong>
+                                        <small>
+                                            {% if value == 'express' %}от 390 ₽ · в день заказа
+                                            {% elif value == 'pickup' %}бесплатно · скидка 10%
+                                            {% else %}от 290 ₽ · удобный интервал{% endif %}
+                                        </small>
+                                    </span>
+                                </span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {{ form.delivery_method.errors }}
+                    </fieldset>
+
+                    <fieldset class="checkout-fieldset mb-4">
+                        <legend class="checkout-fieldset__title">Способ оплаты</legend>
+                        <div class="checkout-options">
+                            {% for value, label in form.payment_method.field.choices %}
+                            <label class="checkout-option">
+                                <input type="radio" name="payment_method" value="{{ value }}"
+                                       class="checkout-option__input"
+                                       {% if form.payment_method.value == value %}checked{% endif %}>
+                                <span class="checkout-option__box">
+                                    <span class="checkout-option__icon">
+                                        {% if value == 'cash' %}<i class="fas fa-money-bill-wave"></i>
+                                        {% elif value == 'card_courier' %}<i class="fas fa-credit-card"></i>
+                                        {% else %}<i class="fas fa-globe"></i>{% endif %}
+                                    </span>
+                                    <span class="checkout-option__text">
+                                        <strong>{{ label }}</strong>
+                                    </span>
+                                </span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {{ form.payment_method.errors }}
+                    </fieldset>
+
+                    <fieldset class="checkout-fieldset mb-4" id="deliveryAddressFields">
+                        <legend class="checkout-fieldset__title">Контакты и адрес</legend>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                                {{ form.first_name }}
+                                {{ form.first_name.errors }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                                {{ form.last_name }}
+                                {{ form.last_name.errors }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                                {{ form.email }}
+                                {{ form.email.errors }}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
+                                {{ form.phone }}
+                                {{ form.phone.errors }}
+                            </div>
+                            <div class="col-md-6" data-address-field>
+                                <label for="{{ form.city.id_for_label }}" class="form-label">{{ form.city.label }}</label>
+                                {{ form.city }}
+                                {{ form.city.errors }}
+                            </div>
+                            <div class="col-md-6" data-address-field>
+                                <label for="{{ form.postal_code.id_for_label }}" class="form-label">{{ form.postal_code.label }}</label>
+                                {{ form.postal_code }}
+                                {{ form.postal_code.errors }}
+                            </div>
+                            <div class="col-12" data-address-field>
+                                <label for="{{ form.address.id_for_label }}" class="form-label">{{ form.address.label }}</label>
+                                {{ form.address }}
+                                {{ form.address.errors }}
+                            </div>
+                            <div class="col-12">
+                                <label for="{{ form.comment.id_for_label }}" class="form-label">{{ form.comment.label }}</label>
+                                {{ form.comment }}
+                                {{ form.comment.errors }}
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <button type="submit" class="btn btn-primary w-100 btn-lg">
+                        <i class="fas fa-check me-2"></i>Подтвердить заказ
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <aside class="checkout-summary reveal">
+                <h2 class="checkout-summary__title">Состав заказа</h2>
+                <ul class="checkout-summary__list">
+                    {% for item in cart %}
+                    <li>
+                        <span>{{ item.product.name }} × {{ item.quantity }}</span>
+                        <strong>{{ item.total_price|floatformat:0 }} ₽</strong>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="checkout-summary__row">
+                    <span>Товары</span>
+                    <strong id="itemsTotalLabel">{{ cart_items_total|floatformat:0 }} ₽</strong>
+                </div>
+                <div class="checkout-summary__row">
+                    <span>Доставка</span>
+                    <strong id="deliveryCostLabel">
+                        {% if delivery_cost %}{{ delivery_cost|floatformat:0 }} ₽{% else %}бесплатно{% endif %}
+                    </strong>
+                </div>
+                <div class="checkout-summary__total">
+                    <span>Итого</span>
+                    <strong id="orderTotalLabel">{{ grand_total|floatformat:0 }} ₽</strong>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const deliveryCosts = { express: 390, standard: 290, pickup: 0 };
+    const itemsTotal = parseFloat('{{ cart_items_total_js }}');
+    const deliveryInputs = document.querySelectorAll('input[name="delivery_method"]');
+    const addressFields = document.querySelectorAll('[data-address-field]');
+    const deliveryCostLabel = document.getElementById('deliveryCostLabel');
+    const orderTotalLabel = document.getElementById('orderTotalLabel');
+
+    function formatRub(amount) {
+        return Math.round(amount).toLocaleString('ru-RU') + ' \u20BD';
+    }
+
+    function updateSummary() {
+        const selected = document.querySelector('input[name="delivery_method"]:checked');
+        const method = selected ? selected.value : 'standard';
+        const deliveryCost = deliveryCosts[method] ?? 290;
+        const isPickup = method === 'pickup';
+        const grandTotal = itemsTotal + deliveryCost;
+
+        addressFields.forEach((field) => {
+            field.classList.toggle('d-none', isPickup);
+            field.querySelectorAll('input').forEach((input) => {
+                input.required = !isPickup && (input.name === 'city' || input.name === 'address');
+            });
+        });
+
+        deliveryCostLabel.textContent = deliveryCost === 0 ? 'бесплатно' : formatRub(deliveryCost);
+        orderTotalLabel.textContent = formatRub(grandTotal);
+    }
+
+    if (!Number.isNaN(itemsTotal)) {
+        deliveryInputs.forEach((input) => input.addEventListener('change', updateSummary));
+        updateSummary();
+    }
+})();
+</script>
+{% endblock %}

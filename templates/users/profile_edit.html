@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Редактирование профиля — ИМИДЖ{% endblock %}
+
+{% block content %}
+<div class="container">
+    <header class="page-header reveal">
+        <span class="section-label">Аккаунт</span>
+        <h1 class="page-title">Редактирование профиля</h1>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-card reveal">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-flora alert-flora--error mb-4">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+                            {{ form.email }}
+                            {{ form.email.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
+                            {{ form.phone }}
+                            {{ form.phone.errors }}
+                        </div>
+                        <div class="col-12">
+                            <label for="{{ form.address.id_for_label }}" class="form-label">{{ form.address.label }}</label>
+                            {{ form.address }}
+                            {{ form.address.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.birth_date.id_for_label }}" class="form-label">{{ form.birth_date.label }}</label>
+                            {{ form.birth_date }}
+                            {{ form.birth_date.errors }}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check me-2"></i>Сохранить
+                        </button>
+                        <a href="{% url 'users:profile' %}" class="btn btn-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

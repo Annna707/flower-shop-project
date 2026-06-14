@@ -1,0 +1,514 @@
+{% extends "base.html" %}
+{% block title %}Каталог цветов — ИМИДЖ{% endblock %}
+
+{% block hero %}
+{% if not category and not min_price and not max_price and not search_query %}
+<section class="hero-section" aria-label="Главный баннер">
+    <div class="hero-deco" aria-hidden="true">
+        <span class="hero-petal hero-petal--1"></span>
+        <span class="hero-petal hero-petal--2"></span>
+        <span class="hero-petal hero-petal--3"></span>
+        <span class="hero-petal hero-petal--4"></span>
+        <span class="hero-orb hero-orb--1"></span>
+        <span class="hero-orb hero-orb--2"></span>
+    </div>
+    <div class="hero-slider">
+        <div class="hero-slide hero-slide--1 is-active">
+            <div class="hero-slide__bg" aria-hidden="true"></div>
+            <div class="hero-slide__overlay"></div>
+            <div class="hero-slide__glow" aria-hidden="true"></div>
+            <div class="container hero-slide__layout">
+                <div class="hero-slide__content" data-hero-content>
+                    <div class="hero-badge-row">
+                        <span class="hero-pill"><i class="fas fa-spa"></i> Новая коллекция</span>
+                        <span class="hero-pill hero-pill--gold"><i class="fas fa-star"></i> 4.9 · 400+ отзывов</span>
+                    </div>
+                    <h1 class="hero-title">Цветы, которые <em>говорят</em> за вас</h1>
+                    <p class="hero-subtitle">Авторские композиции из отборных цветов с бережной доставкой в удобное время.</p>
+                    <div class="hero-stats">
+                        <div class="hero-stat"><strong>2 ч</strong><span>доставка по городу</span></div>
+                        <div class="hero-stat"><strong>7 лет</strong><span>с любовью к цветам</span></div>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="#catalog" class="btn btn-primary btn-lg hero-btn-glow">
+                            <i class="fas fa-seedling me-2"></i>Смотреть каталог
+                        </a>
+                        <a href="{% url 'catalog:product_list' %}?max_price=3000" class="btn btn-outline-light btn-lg">До 3000 ₽</a>
+                    </div>
+                </div>
+                <aside class="hero-slide__feature" data-hero-feature>
+                    <div class="hero-feature-card">
+                        <span class="hero-feature-card__tag">Хит недели</span>
+                        <div class="hero-feature-card__thumb">
+                            {% if hero_hit and hero_hit.image %}
+                            <img src="{{ hero_hit.image.url }}" alt="{{ hero_hit.name }}" loading="lazy">
+                            {% else %}
+                            <span class="hero-feature-card__thumb-fallback"><i class="fas fa-spa"></i></span>
+                            {% endif %}
+                        </div>
+                        <strong class="hero-feature-card__title">{% if hero_hit %}{{ hero_hit.name }}{% else %}Нежный рассвет{% endif %}</strong>
+                        <p class="hero-feature-card__text">{% if hero_hit %}{{ hero_hit.description|truncatewords:12 }}{% else %}Розы и эустома в пастельной гамме{% endif %}</p>
+                        <span class="hero-feature-card__price">{% if hero_hit %}{{ hero_hit.price|floatformat:0 }} ₽{% else %}2 890 ₽{% endif %}</span>
+                        <a href="{% if hero_hit %}{{ hero_hit.get_absolute_url }}{% else %}#catalog{% endif %}" class="btn btn-primary w-100">Выбрать букет</a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        <div class="hero-slide hero-slide--2" hidden>
+            <div class="hero-slide__bg" aria-hidden="true"></div>
+            <div class="hero-slide__overlay"></div>
+            <div class="hero-slide__glow" aria-hidden="true"></div>
+            <div class="container hero-slide__layout">
+                <div class="hero-slide__content" data-hero-content>
+                    <div class="hero-badge-row">
+                        <span class="hero-pill"><i class="fas fa-gift"></i> Подарок с душой</span>
+                        <span class="hero-pill hero-pill--gold"><i class="fas fa-heart"></i> Открытка бесплатно</span>
+                    </div>
+                    <h1 class="hero-title">Букеты к <em>любому</em> событию</h1>
+                    <p class="hero-subtitle">День рождения, свадьба или просто «скучаю» — подберём идеальную композицию за 5 минут.</p>
+                    <div class="hero-stats">
+                        <div class="hero-stat"><strong>40+</strong><span>категорий</span></div>
+                        <div class="hero-stat"><strong>24/7</strong><span>приём заказов</span></div>
+                        <div class="hero-stat"><strong>100%</strong><span>качество цветов</span></div>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="#catalog" class="btn btn-primary btn-lg hero-btn-glow">
+                            <i class="fas fa-wand-magic-sparkles me-2"></i>Выбрать букет
+                        </a>
+                    </div>
+                </div>
+                <aside class="hero-slide__feature" data-hero-feature>
+                    <div class="hero-feature-card hero-feature-card--rose">
+                        <span class="hero-feature-card__tag">Свадебная коллекция</span>
+                        <div class="hero-feature-card__thumb">
+                            {% if hero_wedding and hero_wedding.image %}
+                            <img src="{{ hero_wedding.image.url }}" alt="{{ hero_wedding.name }}" loading="lazy">
+                            {% else %}
+                            <span class="hero-feature-card__thumb-fallback"><i class="fas fa-spa"></i></span>
+                            {% endif %}
+                        </div>
+                        <strong class="hero-feature-card__title">{% if hero_wedding %}{{ hero_wedding.name }}{% else %}Невеста «Белоснежка»{% endif %}</strong>
+                        <p class="hero-feature-card__text">{% if hero_wedding %}{{ hero_wedding.description|truncatewords:12 }}{% else %}Классический букет из 19 белых роз{% endif %}</p>
+                        <span class="hero-feature-card__price">{% if hero_wedding %}{{ hero_wedding.price|floatformat:0 }} ₽{% else %}от 8 900 ₽{% endif %}</span>
+                        <a href="{% if hero_wedding %}{{ hero_wedding.get_absolute_url }}{% else %}#catalog{% endif %}" class="btn btn-primary w-100">Смотреть свадебные</a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        <div class="hero-slide hero-slide--3" hidden>
+            <div class="hero-slide__bg" aria-hidden="true"></div>
+            <div class="hero-slide__overlay"></div>
+            <div class="hero-slide__glow" aria-hidden="true"></div>
+            <div class="container hero-slide__layout">
+                <div class="hero-slide__content" data-hero-content>
+                    <div class="hero-badge-row">
+                        <span class="hero-pill"><i class="fas fa-bolt"></i> Экспресс-доставка</span>
+                        <span class="hero-pill hero-pill--gold"><i class="fas fa-leaf"></i> Срезанные перед отправкой</span>
+                    </div>
+                    <h1 class="hero-title">Свежесть с <em>первого</em> взгляда</h1>
+                    <p class="hero-subtitle">Собираем букеты перед отправкой — цветы приезжают такими, как на фото.</p>
+                    <div class="hero-stats">
+                        <div class="hero-stat"><strong>−15%</strong><span>на первый заказ</span></div>
+                        <div class="hero-stat"><strong>0 ₽</strong><span>открытка в подарок</span></div>
+                        <div class="hero-stat"><strong>Гарантия</strong><span>свежести 48 часов</span></div>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="#catalog" class="btn btn-sage btn-lg hero-btn-glow">
+                            <i class="fas fa-truck-fast me-2"></i>Заказать сейчас
+                        </a>
+                    </div>
+                </div>
+                <aside class="hero-slide__feature" data-hero-feature>
+                    <div class="hero-feature-card hero-feature-card--sage">
+                        <span class="hero-feature-card__tag">Акция дня</span>
+                        <div class="hero-feature-card__thumb">
+                            {% if hero_promo and hero_promo.image %}
+                            <img src="{{ hero_promo.image.url }}" alt="{{ hero_promo.name }}" loading="lazy">
+                            {% else %}
+                            <span class="hero-feature-card__thumb-fallback"><i class="fas fa-spa"></i></span>
+                            {% endif %}
+                        </div>
+                        <strong class="hero-feature-card__title">Промокод ЦВЕТЫ15</strong>
+                        <p class="hero-feature-card__text">Скидка 15% на {% if hero_promo %}{{ hero_promo.name|lower }}{% else %}первый заказ{% endif %} до конца месяца</p>
+                        <span class="hero-feature-card__price hero-feature-card__price--accent">−15%</span>
+                        <a href="{% if hero_promo %}{{ hero_promo.get_absolute_url }}{% else %}#catalog{% endif %}" class="btn btn-sage w-100">Воспользоваться</a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        <button type="button" class="hero-arrow hero-arrow--prev" aria-label="Предыдущий слайд">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button type="button" class="hero-arrow hero-arrow--next" aria-label="Следующий слайд">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="hero-controls">
+            <button type="button" class="hero-dot is-active" aria-label="Слайд 1" data-slide="0"></button>
+            <button type="button" class="hero-dot" aria-label="Слайд 2" data-slide="1"></button>
+            <button type="button" class="hero-dot" aria-label="Слайд 3" data-slide="2"></button>
+        </div>
+        <div class="hero-progress" aria-hidden="true">
+            <span class="hero-progress__bar"></span>
+        </div>
+    </div>
+</section>
+
+<section class="trust-strip">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="trust-item">
+                    <i class="fas fa-truck-fast"></i>
+                    <div>
+                        <strong>Доставка за 2 часа</strong>
+                        <span>По городу в день заказа</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="trust-item">
+                    <i class="fas fa-leaf"></i>
+                    <div>
+                        <strong>Только свежие цветы</strong>
+                        <span>Прямые поставки от фермеров</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="trust-item">
+                    <i class="fas fa-gift"></i>
+                    <div>
+                        <strong>Бесплатная открытка</strong>
+                        <span>К каждому букету</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if categories and not category and not min_price and not max_price and not search_query %}
+    <section class="category-tiles reveal mb-4" aria-label="Категории">
+        <div class="category-tiles__grid">
+            <a href="{% url 'catalog:product_list' %}?max_price=2500" class="category-tile category-tile--rose">
+                <span class="category-tile__icon"><i class="fas fa-fire"></i></span>
+                <span class="category-tile__label">Выгодные</span>
+            </a>
+            <a href="{% url 'catalog:product_list' %}" class="category-tile category-tile--sage">
+                <span class="category-tile__icon"><i class="fas fa-bolt"></i></span>
+                <span class="category-tile__label">Экспресс</span>
+            </a>
+            {% for cat in categories|slice:":4" %}
+            <a href="{{ cat.get_absolute_url }}" class="category-tile category-tile--{% cycle 'blush' 'cream' 'gold' 'sage' %}">
+                {% if cat.image %}
+                <img src="{{ cat.image.url }}" alt="" class="category-tile__img">
+                {% else %}
+                <span class="category-tile__icon"><i class="fas fa-seedling"></i></span>
+                {% endif %}
+                <span class="category-tile__label">{{ cat.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if categories %}
+    <div class="filter-tags reveal mb-4">
+        <a href="{% url 'catalog:product_list' %}"
+           class="filter-tag {% if not category and not min_price and not max_price %}is-active{% endif %}">
+            <i class="fas fa-border-all"></i> Все
+        </a>
+        {% for cat in categories %}
+        <a href="{{ cat.get_absolute_url }}"
+           class="filter-tag {% if category and category.id == cat.id %}is-active{% endif %}">
+            <i class="fas fa-spa"></i> {{ cat.name }}
+        </a>
+        {% endfor %}
+        <a href="{% url 'catalog:product_list' %}?max_price=3000"
+           class="filter-tag {% if max_price == '3000' %}is-active{% endif %}">
+            <i class="fas fa-tag"></i> До 3000 ₽
+        </a>
+        <a href="{% url 'catalog:product_list' %}?min_price=5000"
+           class="filter-tag {% if min_price == '5000' %}is-active{% endif %}">
+            <i class="fas fa-gem"></i> Premium
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="catalog-layout" id="catalog">
+        <aside class="catalog-sidebar">
+            <button type="button" class="btn btn-secondary filter-toggle-mobile" id="filterToggle"
+                    aria-expanded="false" aria-controls="filterPanel">
+                <i class="fas fa-sliders me-2"></i>Фильтры
+            </button>
+            <div class="filter-card" id="filterPanel">
+                <h5>Категории</h5>
+                <ul class="list-unstyled filter-list mb-0">
+                    <li>
+                        <a href="{% url 'catalog:product_list' %}" class="{% if not category %}is-active{% endif %}">Все товары</a>
+                    </li>
+                    {% for cat in categories %}
+                    <li>
+                        <a href="{{ cat.get_absolute_url }}" class="{% if category and category.id == cat.id %}is-active{% endif %}">{{ cat.name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <hr>
+                <h5>Цена, ₽</h5>
+                <form method="get" class="price-range">
+                    {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+                    <div class="mb-2">
+                        <input type="number" name="min_price" class="form-control" placeholder="от" value="{{ min_price|default:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <input type="number" name="max_price" class="form-control" placeholder="до" value="{{ max_price|default:'' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Применить</button>
+                </form>
+            </div>
+        </aside>
+
+        <div class="catalog-main">
+            <header class="page-header reveal">
+                <span class="section-label">{% if category %}{{ category.name }}{% elif search_query %}Поиск{% else %}Каталог{% endif %}</span>
+                <h1 class="page-title">
+                    {% if category %}{{ category.name }}
+                    {% elif search_query %}«{{ search_query }}»
+                    {% else %}Все букеты{% endif %}
+                </h1>
+                <p class="page-lead">
+                    {% if products %}
+                    {{ products|length }} {% if products|length == 1 %}букет{% elif products|length < 5 %}букета{% else %}букетов{% endif %} в наличии
+                    {% else %}
+                    Скоро появятся новые композиции
+                    {% endif %}
+                </p>
+            </header>
+
+            <div class="products-grid products-grid--market">
+                {% for product in products %}
+                <article class="product-card product-card--market reveal"
+                         data-product-id="{{ product.id }}"
+                         data-product-name="{{ product.name|escape }}"
+                         data-product-price="{{ product.price }}"
+                         data-product-description="{{ product.description|escapejs }}"
+                         data-product-category="{{ product.category.name|escape }}"
+                         data-product-stock="{{ product.available_stock }}"
+                         data-product-available="{{ product.available|yesno:'true,false' }}"
+                         data-product-url="{{ product.get_absolute_url }}"
+                         data-product-image="{% if product.image %}{{ product.image.url }}{% endif %}"
+                         data-cart-url="{% url 'cart:cart_add' product.id %}">
+                    <div class="product-card__media">
+                        <a href="{{ product.get_absolute_url }}" class="product-card__img-link" tabindex="-1" aria-hidden="true">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                            {% else %}
+                            <div class="product-card__placeholder">
+                                <i class="fas fa-spa"></i>
+                            </div>
+                            {% endif %}
+                        </a>
+                        {% if product.available_stock > 0 %}
+                        <span class="product-card__express" data-express-badge title="Быстрая доставка"><i class="fas fa-bolt"></i></span>
+                        {% endif %}
+                        <div class="product-card__hover-actions">
+                            <button type="button" class="product-card__action" data-quick-view title="Быстрый просмотр">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <a href="{{ product.get_absolute_url }}" class="product-card__action" title="Подробнее">
+                                <i class="fas fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="product-card__body">
+                        <div class="product-card__price-row">
+                            <span class="product-card__price">{{ product.price|floatformat:0 }} <small>₽</small></span>
+                        </div>
+                        <span class="product-card__stock {% if product.available_stock > 0 %}product-card__stock--in{% else %}product-card__stock--out{% endif %}" data-stock-label>
+                            <span class="product-card__stock-dot"></span>
+                            {% if product.available_stock > 0 %}в наличии · {{ product.available_stock }} шт.{% else %}под заказ{% endif %}
+                        </span>
+                        <h2 class="product-card__title">
+                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                        </h2>
+                        <form action="{% url 'cart:cart_add' product.id %}" method="post"
+                              class="product-card__cart-form js-cart-add{% if product.available_stock == 0 %} d-none{% endif %}" data-cart-form>
+                            {% csrf_token %}
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary product-card__cart-btn">
+                                <i class="fas fa-bag-shopping me-2"></i>В корзину
+                            </button>
+                        </form>
+                        <button type="button" class="btn btn-secondary product-card__cart-btn{% if product.available_stock > 0 %} d-none{% endif %}"
+                                disabled data-out-of-stock-btn>Нет в наличии</button>
+                    </div>
+                </article>
+                {% empty %}
+                <div class="empty-state reveal" style="grid-column: 1 / -1;">
+                    <i class="fas fa-seedling d-block"></i>
+                    <h3>Товаров пока нет</h3>
+                    <p class="text-muted mb-4">Добавьте букеты через админ-панель или измените фильтры.</p>
+                    <a href="{% url 'catalog:product_list' %}" class="btn btn-primary">Сбросить фильтры</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="delivery-section" id="delivery" aria-labelledby="delivery-title">
+    <div class="container">
+        <header class="delivery-section__header reveal">
+            <span class="section-label">Доставка</span>
+            <h2 class="page-title" id="delivery-title">Привезём букет бережно и вовремя</h2>
+            <p class="page-lead">Доставляем по городу и области. Собираем заказ перед отправкой и присылаем фото готового букета.</p>
+        </header>
+
+        <div class="delivery-options reveal">
+            <article class="delivery-option delivery-option--express">
+                <div class="delivery-option__icon"><i class="fas fa-bolt"></i></div>
+                <h3>Экспресс</h3>
+                <p class="delivery-option__time">от 2 часов</p>
+                <p class="delivery-option__desc">По городу при заказе до 18:00. Идеально для срочных поздравлений.</p>
+                <span class="delivery-option__price">от 390 ₽</span>
+            </article>
+            <article class="delivery-option delivery-option--standard">
+                <div class="delivery-option__icon"><i class="fas fa-truck"></i></div>
+                <h3>Стандарт</h3>
+                <p class="delivery-option__time">в выбранный интервал</p>
+                <p class="delivery-option__desc">Доставка в удобный 2-часовой слот: утро, день или вечер.</p>
+                <span class="delivery-option__price">от 290 ₽</span>
+            </article>
+            <article class="delivery-option delivery-option--pickup">
+                <div class="delivery-option__icon"><i class="fas fa-store"></i></div>
+                <h3>Самовывоз</h3>
+                <p class="delivery-option__time">через 1 час</p>
+                <p class="delivery-option__desc">Заберите букет в нашем салоне. Скидка 10% на самовывоз.</p>
+                <span class="delivery-option__price">бесплатно</span>
+            </article>
+        </div>
+
+        <div class="delivery-grid reveal">
+            <div class="delivery-steps">
+                <h3 class="delivery-block__title">Как это работает</h3>
+                <ol class="delivery-steps__list">
+                    <li>
+                        <span class="delivery-steps__num">1</span>
+                        <div>
+                            <strong>Выберите букет</strong>
+                            <span>Добавьте в корзину и оформите заказ на сайте</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="delivery-steps__num">2</span>
+                        <div>
+                            <strong>Флорист собирает заказ</strong>
+                            <span>Букет создаётся вручную непосредственно перед доставкой</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="delivery-steps__num">3</span>
+                        <div>
+                            <strong>Фото для согласования</strong>
+                            <span>Пришлём снимок — вы увидите результат до отправки</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="delivery-steps__num">4</span>
+                        <div>
+                            <strong>Курьер доставляет</strong>
+                            <span>Бережная транспортировка и бесплатная открытка в подарок</span>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="delivery-info-card">
+                <h3 class="delivery-block__title">Зоны и стоимость</h3>
+                <ul class="delivery-zones">
+                    <li>
+                        <span>Центр города</span>
+                        <strong>от 290 ₽</strong>
+                    </li>
+                    <li>
+                        <span>Спальные районы</span>
+                        <strong>от 390 ₽</strong>
+                    </li>
+                    <li>
+                        <span>Ночная доставка (21:00–09:00)</span>
+                        <strong>+300 ₽</strong>
+                    </li>
+                </ul>
+                <div class="delivery-info-card__note">
+                    <i class="fas fa-circle-info"></i>
+                    <p>Бесплатная доставка при заказе от 5 000 ₽ по городу. Точную стоимость рассчитаем при оформлении.</p>
+                </div>
+                <a href="{% url 'catalog:product_list' %}#catalog" class="btn btn-primary w-100">
+                    <i class="fas fa-seedling me-2"></i>Перейти к каталогу
+                </a>
+            </div>
+        </div>
+
+        <div class="delivery-perks reveal">
+            <div class="delivery-perk">
+                <i class="fas fa-temperature-low"></i>
+                <span>Термосумка для цветов</span>
+            </div>
+            <div class="delivery-perk">
+                <i class="fas fa-droplet"></i>
+                <span>Средство для среза в подарок</span>
+            </div>
+            <div class="delivery-perk">
+                <i class="fas fa-gift"></i>
+                <span>Открытка с вашим текстом</span>
+            </div>
+            <div class="delivery-perk">
+                <i class="fas fa-shield-heart"></i>
+                <span>Гарантия свежести 48 часов</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if not category and not min_price and not max_price and not search_query %}
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <span class="section-label">Почему мы</span>
+            <h2 class="page-title">Забота в каждом лепестке</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 reveal">
+                <div class="feature-card">
+                    <div class="feature-card__icon"><i class="fas fa-hand-holding-heart"></i></div>
+                    <h4>Ручная сборка</h4>
+                    <p>Каждый букет создаёт флорист — не конвейер, а авторская работа.</p>
+                </div>
+            </div>
+            <div class="col-md-4 reveal">
+                <div class="feature-card">
+                    <div class="feature-card__icon"><i class="fas fa-camera"></i></div>
+                    <h4>Фото перед отправкой</h4>
+                    <p>Пришлём снимок готового букета — вы увидите результат заранее.</p>
+                </div>
+            </div>
+            <div class="col-md-4 reveal">
+                <div class="feature-card">
+                    <div class="feature-card__icon"><i class="fas fa-shield-heart"></i></div>
+                    <h4>Гарантия свежести</h4>
+                    <p>Не понравилось — заменим букет или вернём деньги.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% include "catalog/_product_modal.html" %}
+{% endblock %}
